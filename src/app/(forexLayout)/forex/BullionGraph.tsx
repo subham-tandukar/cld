@@ -11,47 +11,31 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const BullionGraph = () => {
-    const { siteSetting, bullionData, loading } = useRoot();
+    const { siteSetting, bullionData, forexData, loading } = useRoot();
 
-    const bullion = bullionData && bullionData.length > 0
-    const bullionGraph = bullion && bullionData.slice(0, 7)
+    const forex = forexData && forexData.length > 0
+    const forexGraph = forex && forexData.slice(0, 7)
 
 
-    const hallmarkData = bullion && bullionGraph.map((item) => item.gold_hallmark_tola)
-    const tejabiData = bullion && bullionGraph.map((item) => item.gold_tejabi_tola)
-    const silverData = bullion && bullionGraph.map((item) => item.silver_tola)
-    const bullionDate = bullion && bullionGraph.map((item) => item.date)
+    const forexGraphData = forex && forexGraph.map((item) => item.rates[1].buy)
+    const bullionDate = forex && forexGraph.map((item) => item.date)
 
-    const formattedBullionData = bullionDate && bullionDate.length > 0 && bullionDate.map((item) => item.split("-").slice(1, 3).join("-"))
-    console.log("bulkion", formattedBullionData)
+    console.log("bulkion", forexGraphData)
     // Configuring the Line chart data
     const chartData = {
-        labels: formattedBullionData,
+        labels: bullionDate,
         datasets: [
             {
                 label: siteSetting?.hallmark_title_np || 'छापावाल',
-                data: hallmarkData,
-                backgroundColor: 'rgba(255, 215, 0, 0.2)', // Golden color with alpha for background
-                borderColor: 'rgba(255, 215, 0, 1)',
+                data: forexGraphData,
+                backgroundColor: 'rgba(29, 99, 237, 0.2)', // Golden color with alpha for background
+                borderColor: 'rgba(29, 99, 237, 1)',
                 borderWidth: 1,
             },
-            {
-                label: siteSetting?.tejabi_title_np || 'तेजाबी',
-                data: tejabiData,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-            },
-            {
-                label: siteSetting?.silver_title_np || 'चाँदी',
-                data: silverData,
-                backgroundColor: 'rgba(192, 192, 192, 0.2)', // Silver color with alpha for background
-                borderColor: 'rgba(192, 192, 192, 1)',
-                borderWidth: 1,
-            },
+
         ],
     };
-
+    let delayed;
 
     return (
         <>
@@ -78,13 +62,30 @@ const BullionGraph = () => {
                                         text: 'Date',
                                     },
                                     type: 'category',
-                                    labels: formattedBullionData,
+                                    labels: bullionDate,
                                 },
                                 y: {
                                     title: {
                                         display: true,
                                         text: 'Tola',
                                     },
+                                },
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index',
+                            },
+
+                            animation: {
+                                onComplete: () => {
+                                    delayed = true;
+                                },
+                                delay: (context) => {
+                                    let delay = 0;
+                                    if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                                        delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                                    }
+                                    return delay;
                                 },
                             },
                         }} />

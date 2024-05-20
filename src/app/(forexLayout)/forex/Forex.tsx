@@ -14,21 +14,21 @@ const Forex = () => {
 
     const [fixedForexRate, setFixedForexRate] = useState<any[]>([]);
     const [marketForexRate, setMarketForexRate] = useState<any[]>([]);
-
+    console.log('fixedForexRate', fixedForexRate);
     useEffect(() => {
-        if (forexData) {
-            const forexFixeddata = forexData?.rates || []
+        if (forexData.length > 0) {
+            const forexFixeddata = forexData[0]?.rates
             const fixedData = forexFixeddata.filter((item) => {
-                return item?.currency?.iso3 === "INR"
+                return item?.currency_code === "INR"
             })
             setFixedForexRate(fixedData)
 
             const marketData = forexFixeddata.filter((item) => {
-                return item?.currency?.iso3 !== "INR"
+                return item?.currency_code !== "INR"
             })
             setMarketForexRate(marketData)
         }
-    }, [forexData])
+    }, [forexData.length])
 
     return (
         <>
@@ -95,7 +95,7 @@ const Forex = () => {
 
                                 <>
                                     {
-                                        forexData?.rates.length > 0 ? (
+                                        forexData && forexData.length > 0 ? (
                                             <>
                                                 <div>
                                                     <div className='ok-title'>
@@ -123,11 +123,11 @@ const Forex = () => {
                                                                         fixedForexRate.map((item) => (
                                                                             <tr>
                                                                                 <td>
-                                                                                    {item?.currency?.name} {" "}
-                                                                                    ({item?.currency?.iso3})
+                                                                                    {item?.currency_title} {" "}
+                                                                                    ({item?.currency_code})
                                                                                 </td>
                                                                                 <td className='tx-align-r'>
-                                                                                    {item?.currency?.unit}
+                                                                                    {item?.unit}
                                                                                 </td>
                                                                                 <td className='tx-align-r'>
                                                                                     {item?.buy}
@@ -170,11 +170,11 @@ const Forex = () => {
                                                                         marketForexRate.map((item) => (
                                                                             <tr>
                                                                                 <td>
-                                                                                    {item?.currency?.name} {" "}
-                                                                                    ({item?.currency?.iso3})
+                                                                                    {item?.currency_title} {" "}
+                                                                                    ({item?.currency_code})
                                                                                 </td>
                                                                                 <td className='tx-align-r'>
-                                                                                    {item?.currency?.unit}
+                                                                                    {item?.unit}
                                                                                 </td>
                                                                                 <td className='tx-align-r'>
                                                                                     {item?.buy}

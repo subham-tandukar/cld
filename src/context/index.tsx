@@ -156,7 +156,7 @@ export function RootContextProvider({ children }: RootContextProviderProps): JSX
     const [forexData, setForexData] = useState<any[]>([]);
     const [forexLoading, setForexLoading] = useState<boolean>(true);
     const getForexList = async () => {
-        const forexapi = `https://www.nrb.org.np/api/forex/v1/rate`;
+        const forexapi = `https://backend-calendar.onlinekhabar.com/api/v1/forex`;
 
         try {
             setForexLoading(true)
@@ -168,7 +168,7 @@ export function RootContextProvider({ children }: RootContextProviderProps): JSX
             }
             if (response.ok) {
                 const forex = await response.json();
-                setForexData(forex?.data?.payload)
+                setForexData(forex?.data)
                 setForexLoading(false)
             }
         } catch (error) {
